@@ -70,7 +70,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: 'edc-popover.css'
+            filename: 'edc-popover-ng1.css'
         }),
     ],
     stats: 'verbose',

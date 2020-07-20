@@ -1,0 +1,21 @@
+@appprimary: rgb(60, 141, 188);
+
+edc-help {
+  line-height: 34px;
+  font-size: 16px;
+  padding-right: 5px;
+  .help-icon {
+    cursor: pointer;
+    color: lightgray;
+    &:hover {
+      color: @appprimary;
+    }
+
+    &.on-dark {
+      color: rgba(0, 0, 0, .3);
+      &:hover {
+        color: white;
+      }
+    }
+  }
+}

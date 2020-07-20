@@ -129,7 +129,7 @@ Optional inputs:
 | placement | `string` | Positions can be `auto` `top` `bottom` `right` `left`... (see full list below) | `bottom` |
 | lang | `string` | A language | `undefined` (keeps the language from the provider) |
 | customClass | `string` | A css class name for style customization | `undefined` |
-| appendTo | `parent` or `Element` | the element that will contain the popover | `body` |
+| appendTo | `parent` or `body` | Element that will receive the popover | `body` |
 
 ## Customization
 

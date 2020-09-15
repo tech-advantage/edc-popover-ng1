@@ -1,13 +1,13 @@
 {
   "name": "edc-popover-ng1",
-  "version": "1.0.0",
+  "version": "1.1.0-beta-0",
   "description": "AngularJS Popover library for edc",
   "main": "dist/edc-popover-ng1.js",
   "scripts": {
     "build": "webpack --config ./webpack/webpack.prod.js",
     "start": "webpack --config ./webpack/webpack.dev.js",
     "test": "karma start",
-    "test-auto": "ng test edc-popover-ng"
+    "test-auto": "karma start --singleRun=false"
   },
   "keywords": [
     "edc",
@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "edc-client-js": "^3.1.3",
-    "edc-popover-js": "^1.0.0"
+    "edc-popover-js": "^1.1.0-beta-2"
   },
   "devDependencies": {
     "@types/angular": "^1.7.2",

@@ -1,8 +1,9 @@
 import { EdcClient, Helper, PopoverLabel } from 'edc-client-js';
-import { SYS_LANG } from './translate/language-codes';
-import { EDC_CONFIGURATION_NAME } from './config/edc-configuration.provider';
-import { EdcPopoverConfiguration } from './config/edc-popover-configuration';
-import { GlobalPopoverOptions } from './config/global-popover-options';
+import { SYS_LANG } from '../translate/language-codes';
+import { IEdcPopoverOptions } from '../config/edc-popover-options.interface';
+import { EdcPopoverOptions } from '../config/edc-popover-options';
+import { EdcPopoverConfiguration } from '../config/edc-popover-configuration';
+import { EDC_CONFIGURATION_NAME } from '../config/edc-configuration.provider';
 
 export const EDC_HELP_SERVICE_NAME = 'EdcHelpService';
 
@@ -12,7 +13,7 @@ export class EdcHelpService {
         return [EDC_CONFIGURATION_NAME];
     }
 
-    edcClient: EdcClient;
+    private readonly edcClient: EdcClient;
 
     constructor(private readonly edcPopoverConfig: EdcPopoverConfiguration) {
         this.edcClient = new EdcClient(this.edcPopoverConfig.docPath,
@@ -42,12 +43,8 @@ export class EdcHelpService {
         return this.edcPopoverConfig.pluginId;
     }
 
-    getIcon(): string {
-        return this.edcPopoverConfig.icon || 'fa-question-circle-o';
-    }
-
-    getPopoverOptions(): GlobalPopoverOptions {
-        return this.edcPopoverConfig.options;
+    getPopoverOptions(): IEdcPopoverOptions {
+        return this.edcPopoverConfig.options || new EdcPopoverOptions();
     }
 
     getDefaultLanguage(): string {
@@ -58,7 +55,7 @@ export class EdcHelpService {
         return this.edcClient.isLanguagePresent(langCode);
     }
 
-    getPopoverTranslation(langCode: string): Promise<PopoverLabel> {
+    getPopoverLabels(langCode: string): Promise<PopoverLabel> {
         return this.edcClient.getPopoverLabels(langCode);
     }
 }

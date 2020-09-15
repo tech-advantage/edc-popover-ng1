@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 
 import { HelpComponent } from './help.component';
-import { EdcHelpConfigService, EDC_HELP_CONFIGURATION_NAME } from './config/edc-help-config.service';
+import { EdcHelpConfigService, EDC_HELP_CONFIG_SERVICE_NAME } from './services/edc-help-config.service';
 import { mockServices, mockService } from './utils/test.utils';
 
 
@@ -20,12 +20,12 @@ describe('Help component test', () => {
             .constant('$element', $element)
             .component('edcHelp', HelpComponent as angular.IComponentOptions);
         angular.mock.module('edcHelp');
-        mockServices([mockService(EDC_HELP_CONFIGURATION_NAME, ['buildPopoverConfig'])]);
+        mockServices([mockService(EDC_HELP_CONFIG_SERVICE_NAME, ['buildPopoverConfig'])]);
     });
 
     beforeEach(inject(($injector: angular.auto.IInjectorService, _$componentController_: any) => {
         injector = $injector;
-        helpConfigService = $injector.get<EdcHelpConfigService>(EDC_HELP_CONFIGURATION_NAME);
+        helpConfigService = $injector.get<EdcHelpConfigService>(EDC_HELP_CONFIG_SERVICE_NAME);
         $componentController = _$componentController_;
     }));
 

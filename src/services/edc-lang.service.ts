@@ -1,7 +1,7 @@
-import { EdcHelpService, EDC_HELP_SERVICE_NAME } from '../edc-help.service';
-import { SYS_LANG } from './language-codes';
+import { EdcHelpService, EDC_HELP_SERVICE_NAME } from './edc-help.service';
+import { SYS_LANG } from '../translate/language-codes';
 import { PopoverLabel } from 'edc-client-js';
-import { DEFAULT_LABELS } from './default-translations';
+import { DEFAULT_LABELS } from '../translate/default-translations';
 
 export const EDC_LANG_SERVICE_NAME = 'EdcLangService';
 
@@ -11,7 +11,6 @@ export class EdcLangService {
         return [EDC_HELP_SERVICE_NAME];
     }
 
-    private defaultLanguage: string;
     private lang: string;
 
     constructor(private readonly helpService: EdcHelpService) {
@@ -25,9 +24,17 @@ export class EdcLangService {
         this.lang = lang;
     }
 
-    getTranslation(lang = this.lang) {
+    /**
+     * Returns the popover labels from the i18n files in the publication export
+     *
+     * If an error occurred or no translations were returned, returns default labels
+     *
+     * @param lang the language to use
+     */
+    getPopoverLabels(lang = this.lang) {
         const langToUse = this.helpService.isLanguagePresent(lang) ? lang : SYS_LANG;
-        return this.helpService.getPopoverTranslation(langToUse)
+        return this.helpService.getPopoverLabels(langToUse)
+            .then((translations: PopoverLabel) => translations || this.loadDefaultLabels(lang))
             .catch(() => this.loadDefaultLabels(lang));
     }
 
@@ -37,9 +44,8 @@ export class EdcLangService {
      * @param lang the lang code
      * @param defaultLanguage default lang code
      */
-    loadDefaultLabels(lang: string, defaultLanguage: string = this.defaultLanguage): Promise<PopoverLabel> {
-        const labelTranslation = DEFAULT_LABELS.get(lang) || DEFAULT_LABELS.get(this.defaultLanguage)
-            || DEFAULT_LABELS.get(SYS_LANG);
+    loadDefaultLabels(lang: string): Promise<PopoverLabel> {
+        const labelTranslation = DEFAULT_LABELS.get(lang) || DEFAULT_LABELS.get(SYS_LANG);
 
         return Promise.resolve(labelTranslation);
     }

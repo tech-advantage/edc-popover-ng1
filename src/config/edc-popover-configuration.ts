@@ -1,10 +1,19 @@
-import { GlobalPopoverOptions } from './global-popover-options';
+import { IEdcPopoverOptions } from './edc-popover-options.interface';
 
+/**
+ * Popover global configuration, to provide when importing the edc help module
+ *
+ *    pluginId: URL to the help web app.
+ *    helpPath: URL to the HTTP served export.
+ *    docPath: Export plugin name for the edc documentation.
+ *    i18nDirName: Path to the i18n files, containing the labels
+ *    popoverOptions: Popover global options, to apply to all popovers
+ *
+ */
 export class EdcPopoverConfiguration {
-    helpPath: string; // The URL to the help web app.
-    docPath: string;  // The URL to the HTTP served export.
-    pluginId: string; // Export plugin name for the edc documentation.
-    icon?: string;    // CSS font-awesome class (ex: "fa-question-circle-o").
+    helpPath: string;
+    docPath: string;
+    pluginId: string;
     i18nPath?: string;
-    options?: GlobalPopoverOptions; // Popover options that can be defined globally
+    options?: IEdcPopoverOptions;
 }

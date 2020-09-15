@@ -1,4 +1,4 @@
-import { PopoverOptions } from 'edc-popover-js';
+import { PopoverOptions } from 'edc-popover-utils';
 import { Helper } from 'edc-client-js';
 import { IconPopoverConfig } from '../config/icon-popover-config';
 import { EDC_HELP_CONFIG_SERVICE_NAME, EdcHelpConfigService } from './edc-help-config.service';

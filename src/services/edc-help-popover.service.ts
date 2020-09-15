@@ -1,7 +1,7 @@
 import { Article, Helper, Link, PopoverLabel } from 'edc-client-js';
 import { IconPopoverConfig } from '../config/icon-popover-config';
 import { ContentNotFoundError } from '../errors/content-not-found.error';
-import { PopoverContent } from 'edc-popover-js';
+import { PopoverContent } from 'edc-popover-utils';
 import { EDC_HELP_SERVICE_NAME, EdcHelpService } from './edc-help.service';
 import { EDC_LANG_SERVICE_NAME, EdcLangService } from './edc-lang.service';
 

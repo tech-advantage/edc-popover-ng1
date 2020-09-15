@@ -1,4 +1,4 @@
-import { PopoverContent } from 'edc-popover-js';
+import { PopoverContent } from 'edc-popover-utils';
 import { FailBehavior, IconBehavior, PopoverBehavior } from '../config/fail-behavior';
 import { ContentNotFoundError } from '../errors/content-not-found.error';
 import { IconPopoverConfig } from '../config/icon-popover-config';

@@ -1,6 +1,6 @@
 import { IAugmentedJQuery, IComponentOptions, IScope } from 'angular';
 
-import { Popover } from 'edc-popover-js';
+import { Popover } from 'edc-popover-utils';
 import { EDC_HELP_CONFIG_SERVICE_NAME, EdcHelpConfigService } from './services/edc-help-config.service';
 import { IEdcPopoverOptions } from './config/edc-popover-options.interface';
 import { IconPopoverConfig } from './config/icon-popover-config';
@@ -62,6 +62,7 @@ class HelpComponentCtrl {
             // If not already set, defined the icon as the target element
             this.targetRef = this.getTargetRef();
         }
+        console.log('build config this.options', this.options);
         this.helpConfigService.buildPopoverConfig(this.mainKey, this.subKey, this.pluginId, this.lang, this.options)
             .then((config: IconPopoverConfig) => this.updateConfig(config));
     }

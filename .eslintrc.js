@@ -128,12 +128,8 @@ module.exports = {
             "error",
             "rxjs"
         ],
-        "no-shadow": [
-            "error",
-            {
-                "hoist": "all"
-            }
-        ],
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error"],
         "no-throw-literal": "error",
         "no-trailing-spaces": "off",
         "no-undef-init": "error",

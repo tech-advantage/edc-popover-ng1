@@ -18,5 +18,5 @@
       "es2015"
     ]
   },
-  "exclude": ["node_modules", "./lib/**/*"]
+  "exclude": ["node_modules"]
 }

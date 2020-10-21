@@ -1,4 +1,4 @@
-import { PopoverLabel } from 'edc-client-js/index';
+import { PopoverLabel } from 'edc-client-js';
 
 const LABELS_EN: PopoverLabel = {
     articles: 'Need more...',

@@ -62,7 +62,6 @@ class HelpComponentCtrl {
             // If not already set, defined the icon as the target element
             this.targetRef = this.getTargetRef();
         }
-        console.log('build config this.options', this.options);
         this.helpConfigService.buildPopoverConfig(this.mainKey, this.subKey, this.pluginId, this.lang, this.options)
             .then((config: IconPopoverConfig) => this.updateConfig(config));
     }

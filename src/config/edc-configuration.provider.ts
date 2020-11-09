@@ -3,7 +3,7 @@ import { EdcPopoverConfiguration } from './edc-popover-configuration';
 export const EDC_CONFIGURATION_NAME = 'edcConfiguration';
 
 /**
- * Set the configuration for all the popovers in the host application
+ * Sets the configuration for all the popovers in the host application
  *
  * Needs to be provided by the host application when importing the edc help module
  */
@@ -12,7 +12,7 @@ export class EdcConfigurationProvider {
     config: EdcPopoverConfiguration;
 
     /**
-     * Return the current configuration, when required by angular for dependency injection
+     * Returns the current configuration, when required by angular for dependency injection
      */
     $get(): EdcPopoverConfiguration {
         // This will be injected when requiring the 'edcPopoverConfig' dependency

@@ -8,10 +8,12 @@ import { EDC_HELP_POPOVER_SERVICE_NAME, EdcHelpPopoverService } from './edc-help
 import { IconConfig } from '../config/icon-config';
 import { copyDefinedProperties } from '../utils/global.utils';
 import { EDC_HELP_ERROR_SERVICE_NAME, EdcHelpErrorService } from './edc-help-error.service';
+import { SYS_LANG } from '../translate/language-codes';
 
 export const EDC_HELP_CONFIG_SERVICE_NAME = 'EdcHelpConfigService';
 
 export class EdcHelpConfigService {
+
     // Dependencies Injection
     static get $inject() {
         return [
@@ -44,17 +46,17 @@ export class EdcHelpConfigService {
      * @param lang the lang to use
      * @param options the options for this popover
      */
-    buildPopoverConfig(mainKey: string,
-                       subKey: string,
-                       pluginId?: string,
-                       lang?: string,
-                       options?: IEdcPopoverOptions): Promise<void | IconPopoverConfig> {
+    buildPopoverConfig(mainKey = '',
+                       subKey = '',
+                       pluginId?: string | undefined,
+                       lang = SYS_LANG,
+                       options?: IEdcPopoverOptions): Promise<IconPopoverConfig> {
         // Get the helper from edc-client-js
         return this.helpService.getHelp(mainKey, subKey, pluginId, lang)
-            .then((helper: Helper) => this.helpPopoverService.addContent(helper, mainKey, subKey, lang))
+            .then((helper: Helper | null) => this.helpPopoverService.addContent(helper, mainKey, subKey, lang))
             .then((config: IconPopoverConfig) => this.addOptions(config, options))
             .then((config: IconPopoverConfig) => this.helpPopoverService.addLabels(config))
-            .then((config: IconPopoverConfig) => this.addIcon(config, options))
+            .then((config: IconPopoverConfig) => this.addIcon(config))
             .catch((err: Error) => this.handleError(err, options, lang));
     }
 
@@ -76,7 +78,7 @@ export class EdcHelpConfigService {
      * @param config the popover configuration
      * @param options the options for this popover
      */
-    addOptions(config: IconPopoverConfig, options: IEdcPopoverOptions): IconPopoverConfig {
+    addOptions(config: IconPopoverConfig, options: IEdcPopoverOptions | null | undefined): IconPopoverConfig {
         // Update configuration with resolved options
         config.options = this.resolveOptions(options);
         return config;
@@ -92,7 +94,7 @@ export class EdcHelpConfigService {
      * @param lang the language to use, for the labels
      * @private
      */
-    private handleError(err: Error, options: IEdcPopoverOptions, lang: string): Promise<IconPopoverConfig> {
+    private handleError(err: Error, options: IEdcPopoverOptions | null | undefined, lang: string = SYS_LANG): Promise<IconPopoverConfig> {
         // Process options before handing them to the error service
         const resolvedOptions = this.resolveOptions(options);
         return this.helpErrorService.handleHelpError(err, resolvedOptions, lang);
@@ -109,22 +111,27 @@ export class EdcHelpConfigService {
      * @param options the Popover options
      * @private
      */
-    private resolveOptions(options: IEdcPopoverOptions): IEdcPopoverOptions {
+    private resolveOptions(options: IEdcPopoverOptions | null | undefined): IEdcPopoverOptions {
         // Start merging global options into default ones to make sure all required values are defined
-        const globalOptions: IEdcPopoverOptions = copyDefinedProperties<IEdcPopoverOptions>(new EdcPopoverOptions(), this.helpService.getPopoverOptions());
+        const popoverOptions = this.helpService.getPopoverOptions();
+        const globalOptions: IEdcPopoverOptions | null = copyDefinedProperties<IEdcPopoverOptions>(
+            new EdcPopoverOptions(),
+            popoverOptions
+        );
         // Then override with more specific options from the popover component and set it as config options
-        return copyDefinedProperties<IEdcPopoverOptions>(globalOptions, options);
+        return copyDefinedProperties<IEdcPopoverOptions>(globalOptions, options) ?? new EdcPopoverOptions();
     }
 
     /**
-     * Builds the icon configuration from the given options
+     * Builds the icon configuration
      *
      * @param config the popover configuration
-     * @param options the Popover options
      * @private
      */
-    private addIcon(config: IconPopoverConfig, options: IEdcPopoverOptions): IconPopoverConfig {
-        config.iconConfig = this.helpIconService.buildIconConfig(options, config.labels);
+    private addIcon(config: IconPopoverConfig): IconPopoverConfig {
+        if (config.options) {
+            config.iconConfig = this.helpIconService.buildIconConfig(config.options, config.labels);
+        }
 
         return config;
     }

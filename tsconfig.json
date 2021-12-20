@@ -13,6 +13,7 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "allowSyntheticDefaultImports": true,
+    "strict": true,
     "lib": [
       "dom",
       "es2015"

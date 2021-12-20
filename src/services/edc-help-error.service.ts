@@ -21,6 +21,35 @@ export class EdcHelpErrorService {
     }
 
     /**
+     * Builds the content for the error popover
+     * Based on fail behavior icon and popover options
+     *
+     * @param labels the popover labels
+     * @param failBehavior the behavior options in case of error
+     * @private
+     */
+    private static buildErrorContent(labels: PopoverLabel | null, failBehavior: FailBehavior | null | undefined): PopoverContent | null {
+        let content: PopoverContent | null = new PopoverContent();
+        // Icon behavior options - Hidden and Disabled don't need content
+        if (!failBehavior || failBehavior.icon === IconBehavior.HIDDEN || failBehavior.icon === IconBehavior.DISABLED) {
+            return null;
+        }
+        // Popover behavior
+        switch (failBehavior.popover) {
+            case PopoverBehavior.NO_POPOVER:
+                content = null;
+                break;
+            case PopoverBehavior.ERROR_SHOWN:
+                content.title = labels?.errorTitle ?? '';
+                content.description = (labels?.errors && labels.errors.failedData) ? labels.errors.failedData : '';
+                break;
+            case PopoverBehavior.FRIENDLY_MSG:
+                content.description = labels?.comingSoon ?? '';
+        }
+        return content;
+    }
+
+    /**
      * Handles errors and build a popover containing the error messages
      *
      * @param err the error
@@ -77,45 +106,19 @@ export class EdcHelpErrorService {
      * @private
      */
     private buildErrorConfig(config: IconPopoverConfig): IconPopoverConfig {
+        if (!config.options) {
+            return config;
+        }
         const options: IEdcPopoverOptions = config.options;
         config.iconConfig = this.helpIconService.buildErrorIconConfig(options, config.labels);
 
         // Popover content
-        config.content = this.buildErrorContent(config.labels, options.failBehavior);
+        config.content = EdcHelpErrorService.buildErrorContent(config.labels, options.failBehavior);
         if (!config.content) {
             config.disablePopover = true;
         }
 
         return config;
-    }
-
-    /**
-     * Builds the content for the error popover
-     * Based on fail behavior icon and popover options
-     *
-     * @param labels the popover labels
-     * @param failBehavior the behavior options in case of error
-     * @private
-     */
-    private buildErrorContent(labels: PopoverLabel, failBehavior: FailBehavior): PopoverContent {
-        let content = new PopoverContent();
-        // Icon behavior options - Hidden and Disabled don't need content
-        if (failBehavior.icon === IconBehavior.HIDDEN || failBehavior.icon === IconBehavior.DISABLED) {
-            return null;
-        }
-        // Popover behavior
-        switch (failBehavior.popover) {
-            case PopoverBehavior.NO_POPOVER:
-                content = null;
-                break;
-            case PopoverBehavior.ERROR_SHOWN:
-                content.title = labels.errorTitle;
-                content.description = labels.errors.failedData;
-                break;
-            case PopoverBehavior.FRIENDLY_MSG:
-                content.description = labels.comingSoon;
-        }
-        return content;
     }
 
 }

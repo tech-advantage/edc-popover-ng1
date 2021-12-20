@@ -1,4 +1,5 @@
 import { IEdcPopoverOptions } from './edc-popover-options.interface';
+import { EdcPopoverOptions } from './edc-popover-options';
 
 /**
  * Popover global configuration, to provide when importing the edc help module
@@ -11,9 +12,9 @@ import { IEdcPopoverOptions } from './edc-popover-options.interface';
  *
  */
 export class EdcPopoverConfiguration {
-    helpPath: string;
-    docPath: string;
-    pluginId: string;
-    i18nPath?: string;
-    options?: IEdcPopoverOptions;
+    helpPath = '';
+    docPath = '';
+    pluginId = '';
+    i18nPath?: string = '';
+    options?: IEdcPopoverOptions = new EdcPopoverOptions();
 }

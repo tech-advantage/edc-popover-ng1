@@ -1,13 +1,13 @@
 /**
  * Returns true if a value is null or undefined
  *
- * Obs: worth remembering that null is of type 'object' while undefined is of type 'undefined'
+ * Obs: null is of type 'object' while undefined is of type 'undefined'
  * And null is only loosely equal to itself and undefined, not to the other falsy values
  *
  * @param value the value to check against null or undefined
  */
 
-export const isNil = value => value === undefined || value === null;
+export const isNil = (value: unknown): value is null | undefined => value === undefined || value === null;
 // Note: could also use v == null, since null is loosely equal to undefined
 
 /**
@@ -21,20 +21,20 @@ export const isNil = value => value === undefined || value === null;
  * @param target the target object
  * @param src the object containing the source values
  */
-export const copyDefinedProperties = <T>(target: T, src: T): T => {
-    if (!isObject(target)) {
+export const copyDefinedProperties = <T>(target: T | null, src: T | null | undefined): T | null => {
+    if (!isObject<T>(target)) {
         return null;
     }
     // Create a shallow copy of the target
     const newTarget = Object.assign({}, target);
-    if (!isObject(src)) {
+    if (!isObject<T>(src)) {
         return newTarget;
     }
     // Copying the defined ones into the new target object
     return Object.keys(src)
         .reduce<T>((memo: T, key: string) => {
             // Copy values from src into target only if they are defined
-            if (src.hasOwnProperty(key) && !isNil(src[key])) {
+            if (hasOwnProperty(src, key) && !isNil(src[key])) {
                 memo[key] = src[key];
             }
             return memo;
@@ -42,15 +42,24 @@ export const copyDefinedProperties = <T>(target: T, src: T): T => {
 };
 
 /**
- * Check if value is defined and false
+ * Checks if value is defined and false
  *
  * @param value true if value is defined and equals false
  */
-export const isFalse = (value: boolean): boolean => !isNil(value) && !value;
+export const isFalse = (value: boolean): value is false => !isNil(value) && !value;
 
 /**
  * Returns true if value is an object not null
  *
  * @param obj to object to check
  */
-export const isObject = (obj: any): boolean => typeof obj === 'object' && obj !== null;
+export const isObject = <T>(obj: T | null | undefined): obj is T => typeof obj === 'object' && obj !== null;
+
+/**
+ * Returns true if object has given property
+ *
+ * @param obj the object to check
+ * @param prop the property
+ */
+export const hasOwnProperty = <T>(obj: T, prop: PropertyKey): prop is keyof T =>
+    !!obj && Object.prototype.hasOwnProperty.call(obj, prop);

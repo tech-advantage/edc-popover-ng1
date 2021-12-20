@@ -15,17 +15,17 @@ class HelpComponentCtrl {
     }
 
     // The popover configuration, built from global configuration and component inputs
-    private config: IconPopoverConfig;
+    private config: IconPopoverConfig | undefined;
     // The reference for the icon that will trigger the popover
-    private targetRef: HTMLElement;
-    private popover: Popover;
+    private targetRef: HTMLElement | null | undefined;
+    private popover: Popover | null | undefined;
 
     // Inputs
-    private mainKey: string;
-    private subKey: string;
-    private pluginId: string;
-    private lang: string;
-    private options: IEdcPopoverOptions;
+    private mainKey: string | undefined;
+    private subKey: string | undefined;
+    private pluginId: string | undefined;
+    private lang: string | undefined;
+    private options: IEdcPopoverOptions | undefined;
 
     constructor(private $scope: IScope,
                 private $element: IAugmentedJQuery,
@@ -41,13 +41,16 @@ class HelpComponentCtrl {
     }
 
     getIconClasses(): string | string[] {
+        if (!this.config) {
+            this.config = new IconPopoverConfig();
+        }
         return this.helpConfigService.getIconClasses(this.config);
     }
 
     /**
      * Returns the style if icon was set via url
      */
-    getIconStyle(): Partial<CSSStyleDeclaration> {
+    getIconStyle(): Partial<CSSStyleDeclaration> | null | undefined {
         return this.config && this.config.iconConfig && this.config.iconConfig.imageStyle;
     }
 
@@ -71,8 +74,8 @@ class HelpComponentCtrl {
      *
      * @private
      */
-    private getTargetRef(): HTMLElement {
-        let targetIcon: HTMLElement;
+    private getTargetRef(): HTMLElement | null {
+        let targetIcon: HTMLElement | null = null;
         if (this.$element) {
             // Target is the span, child of current element
             const children = this.$element.children();

@@ -10,6 +10,7 @@ import { IconConfig, IEdcPopoverOptions, EdcPopoverOptions } from '../config';
 import { ContentNotFoundError } from '../errors/content-not-found.error';
 import { IconBehavior, PopoverBehavior } from '../config/fail-behavior';
 import { DEFAULT_ICON } from '../constants/style.constant';
+import { PopoverLabel } from 'edc-client-js';
 
 describe('EdcHelpErrorService test', () => {
 
@@ -18,6 +19,8 @@ describe('EdcHelpErrorService test', () => {
     let service: EdcHelpErrorService;
     let edcHelpIconService: EdcHelpIconService;
     let edcHelpPopoverService: EdcHelpPopoverService;
+
+    let label: PopoverLabel;
 
     beforeEach(() => {
         angular.module('edcHelp', [])
@@ -37,6 +40,10 @@ describe('EdcHelpErrorService test', () => {
         edcHelpPopoverService = $injector.get<EdcHelpPopoverService>(EDC_HELP_POPOVER_SERVICE_NAME);
     }));
 
+    beforeEach(() => {
+        label = DEFAULT_LABELS.get('en') ?? DEFAULT_LABELS.entries().next().value;
+    });
+
     describe('handleHelpError', () => {
         let config: IconPopoverConfig;
         let options: IEdcPopoverOptions;
@@ -46,11 +53,11 @@ describe('EdcHelpErrorService test', () => {
             options = new EdcPopoverOptions();
             config.options = new EdcPopoverOptions();
             // Prevent appendTo functions erratic comparisons
-            options.appendTo = null;
-            config.options.appendTo = null;
+            options.appendTo = undefined;
+            config.options.appendTo = undefined;
             // Mock addLabels with system language - should set the given config labels
             spyOn(edcHelpPopoverService, 'addLabels').and.callFake((conf) => {
-                conf.labels = DEFAULT_LABELS.get('en');
+                conf.labels = label ?? null;
                 return Promise.resolve(conf);
             });
         });
@@ -67,17 +74,20 @@ describe('EdcHelpErrorService test', () => {
             await service.handleHelpError(error, options, 'en').then((errorConfig: IconPopoverConfig) => {
                 expect(errorConfig).toBeDefined();
                 // Labels should be defined
-                expect(errorConfig.labels).toEqual(DEFAULT_LABELS.get('en'));
+                expect(errorConfig.labels).toEqual(label ?? null);
                 // Icon config should have been set by helpIconService
                 expect(edcHelpIconService.buildErrorIconConfig).toHaveBeenCalledWith(options, errorConfig.labels);
                 expect(errorConfig.iconConfig.icon.class).toEqual('my other class');
                 // Default content should have been set - description coming soon message and no title
-                expect(errorConfig.content.description).toEqual(DEFAULT_LABELS.get('en').comingSoon);
-                expect(errorConfig.content.title).toBeFalsy();
+                expect(errorConfig.content && errorConfig.content.description).toEqual(label?.comingSoon ?? null);
+                expect(errorConfig.content && errorConfig.content.title).toBeFalsy();
             });
         });
         // Failbehavior : icon SHOWN, popover ERROR_SHOWN
         it('should return a configuration with icon SHOWN and popover ERROR_SHOWN', async () => {
+            if (!options || !options.failBehavior) {
+                throw Error('options not defined');
+            }
             // Given we have a ContentNotFoundError and fail behavior with IconBehavior.SHOWN && PopoverBehavior.ERROR_SHOWN
             expect(options.failBehavior.icon).toEqual(IconBehavior.SHOWN);
             options.failBehavior.popover = PopoverBehavior.ERROR_SHOWN;
@@ -86,18 +96,24 @@ describe('EdcHelpErrorService test', () => {
 
             // When calling handleHelpError
             await service.handleHelpError(error, options, 'en').then((errorConfig: IconPopoverConfig) => {
+                if (!errorConfig || !errorConfig.content) {
+                    throw Error('options not defined');
+                }
                 // Labels should be defined
-                expect(errorConfig.labels).toEqual(DEFAULT_LABELS.get('en'));
+                expect(errorConfig.labels).toEqual(label ?? null);
                 // Icon config should have been set by helpIconService
                 expect(edcHelpIconService.buildErrorIconConfig).toHaveBeenCalledWith(options, errorConfig.labels);
                 // Default content should have been set: icon class, description with failed data message and title with errorTitle
                 expect(errorConfig.iconConfig.icon.class).toEqual(DEFAULT_ICON);
-                expect(errorConfig.content.description).toEqual(DEFAULT_LABELS.get('en').errors.failedData);
-                expect(errorConfig.content.title).toEqual(DEFAULT_LABELS.get('en').errorTitle);
+                expect(errorConfig.content.description).toEqual(label?.errors?.failedData ?? null);
+                expect(errorConfig.content.title).toEqual(label?.errorTitle ?? null);
             });
         });
         // Failbehavior : icon DISABLED, popover ERROR_SHOWN
         it('should return a configuration with icon DISABLED and popover ERROR_SHOWN', async () => {
+            if (!options || !options.failBehavior) {
+                throw Error('options not defined');
+            }
             // Given we have a ContentNotFoundError and fail behavior with IconBehavior.DISABLED && PopoverBehavior.ERROR_SHOWN
             options.failBehavior.icon = IconBehavior.DISABLED;
             options.failBehavior.popover = PopoverBehavior.ERROR_SHOWN;
@@ -107,7 +123,7 @@ describe('EdcHelpErrorService test', () => {
             // When calling handleHelpError
             await service.handleHelpError(error, options, 'en').then((errorConfig: IconPopoverConfig) => {
                 // Labels should be defined
-                expect(errorConfig.labels).toEqual(DEFAULT_LABELS.get('en'));
+                expect(errorConfig.labels).toEqual(label);
                 // Icon config should have been set by helpIconService
                 expect(edcHelpIconService.buildErrorIconConfig).toHaveBeenCalledWith(options, errorConfig.labels);
                 // With icon disabled, content should be null
@@ -117,6 +133,9 @@ describe('EdcHelpErrorService test', () => {
         });
         // Failbehavior : icon ERROR, popover NO_POPOVER
         it('should return a configuration with icon ERROR and popover NO_POPOVER', async () => {
+            if (!options || !options.failBehavior) {
+                throw Error('options not defined');
+            }
             // Given we have a ContentNotFoundError and fail behavior with IconBehavior.ERROR && PopoverBehavior.NO_POPOVER
             options.failBehavior.icon = IconBehavior.ERROR;
             options.failBehavior.popover = PopoverBehavior.NO_POPOVER;
@@ -126,7 +145,7 @@ describe('EdcHelpErrorService test', () => {
             // When calling handleHelpError
             await service.handleHelpError(error, options, 'en').then((errorConfig: IconPopoverConfig) => {
                 // Labels should be defined
-                expect(errorConfig.labels).toEqual(DEFAULT_LABELS.get('en'));
+                expect(errorConfig.labels).toEqual(label);
                 // Icon config should have been set by helpIconService
                 expect(edcHelpIconService.buildErrorIconConfig).toHaveBeenCalledWith(options, errorConfig.labels);
                 // Default content should be null and disabledPopover should be true
@@ -136,6 +155,9 @@ describe('EdcHelpErrorService test', () => {
         });
         // Failbehavior : icon HIDDEN, popover FRIENDLY_MSG
         it('should return a configuration with icon HIDDEN and popover FRIENDLY_MSG', async () => {
+            if (!options || !options.failBehavior) {
+                throw Error('options not defined');
+            }
             // Given we have a ContentNotFoundError and fail behavior with IconBehavior.HIDDEN && PopoverBehavior.FRIENDLY_MSG
             options.failBehavior.icon = IconBehavior.HIDDEN;
             options.failBehavior.popover = PopoverBehavior.FRIENDLY_MSG;
@@ -145,7 +167,7 @@ describe('EdcHelpErrorService test', () => {
             // When calling handleHelpError
             await service.handleHelpError(error, options, 'en').then((errorConfig: IconPopoverConfig) => {
                 // Labels should be defined
-                expect(errorConfig.labels).toEqual(DEFAULT_LABELS.get('en'));
+                expect(errorConfig.labels).toEqual(label);
                 // Icon config should have been set by helpIconService
                 expect(edcHelpIconService.buildErrorIconConfig).toHaveBeenCalledWith(options, errorConfig.labels);
                 // Default content should be null and disabledPopover should be true
@@ -156,6 +178,9 @@ describe('EdcHelpErrorService test', () => {
 
         // Other errors
         it('should return a configuration for the other errors', async () => {
+            if (!options || !options.failBehavior) {
+                throw Error('options not defined');
+            }
             // Given we have a simple Error and fail behavior with IconBehavior.SHOWN && PopoverBehavior.FRIENDLY_MSG
             options.failBehavior.icon = IconBehavior.SHOWN;
             options.failBehavior.popover = PopoverBehavior.FRIENDLY_MSG;
@@ -165,12 +190,12 @@ describe('EdcHelpErrorService test', () => {
             // When calling handleHelpError
             await service.handleHelpError(error, options, 'en').then((errorConfig: IconPopoverConfig) => {
                 // Labels should be defined
-                expect(errorConfig.labels).toEqual(DEFAULT_LABELS.get('en'));
+                expect(errorConfig.labels).toEqual(label);
                 // Icon config should have been set by helpIconService
                 expect(edcHelpIconService.buildErrorIconConfig).toHaveBeenCalledWith(options, errorConfig.labels);
                 // Default content description should be coming soon and no title should be set
-                expect(errorConfig.content.description).toEqual(DEFAULT_LABELS.get('en').comingSoon);
-                expect(errorConfig.content.title).toBeFalsy();
+                expect(errorConfig?.content?.description).toEqual(label.comingSoon);
+                expect(errorConfig?.content?.title).toBeFalsy();
             });
         });
     });

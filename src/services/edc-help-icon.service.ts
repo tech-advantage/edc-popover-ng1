@@ -19,6 +19,45 @@ import { PopoverLabel } from 'edc-client-js';
 export const EDC_HELP_ICON_SERVICE_NAME = 'EdcHelpIconService';
 
 export class EdcHelpIconService {
+    // Define the classes associated with each behavior:
+    static readonly ERROR_ICON_CLASSES: Map<IconBehavior, IconClass> = new Map()
+        .set(IconBehavior.SHOWN, IconClass.NONE)
+        .set(IconBehavior.DISABLED, IconClass.DISABLED)
+        .set(IconBehavior.HIDDEN, IconClass.HIDDEN)
+        .set(IconBehavior.ERROR, IconClass.ERROR);
+
+    /**
+     * Builds the icon options
+     *
+     * Checks if at least one of the class or url properties should be defined
+     * If not, use default icon class
+     *
+     * returns a safe PopoverIcon
+     * @param options the popover options
+     * @private
+     */
+    private static buildPopoverIcon(options: IEdcPopoverOptions): PopoverIcon {
+        const defaultIcon = PopoverIcon.create();
+        if (!options || !options.icon) {
+            return defaultIcon;
+        }
+        // Make a safe copy merging with default icon values
+        const safeIcon = copyDefinedProperties<PopoverIcon>(defaultIcon, options.icon);
+        if (!safeIcon) {
+            return defaultIcon;
+        }
+        // Check consistency between image url and image class attributes and clean invalid properties
+        if (!safeIcon.url || !safeIcon.url.trim()) {
+            // url property must be null or undefined if not valid
+            safeIcon.url = null;
+        }
+        // Check the class attributes, that contains the icon class name
+        if (!safeIcon.class || !safeIcon.class.trim()) {
+            // At least one of the class or url properties must be defined, use default values if not
+            safeIcon.class = safeIcon.url ? null : DEFAULT_ICON;
+        }
+        return safeIcon;
+    }
 
     /**
      * Builds the configuration for the popover icon, based on resolved options
@@ -31,10 +70,10 @@ export class EdcHelpIconService {
      * @param options the popover options from the received input
      * @param labels the popover labels
      */
-    buildIconConfig(options: IEdcPopoverOptions, labels: PopoverLabel): IconConfig {
+    buildIconConfig(options: IEdcPopoverOptions, labels: PopoverLabel | null | undefined): IconConfig {
         const iconConfig: IconConfig = new IconConfig();
         // Get safe icon properties
-        iconConfig.icon = this.buildPopoverIcon(options);
+        iconConfig.icon = EdcHelpIconService.buildPopoverIcon(options);
         // Add icon tooltip if displayTooltip is true
         iconConfig.iconTooltip = this.getTooltip(options && options.displayTooltip, labels);
         // Create the icon classes that will be used in the component
@@ -58,8 +97,8 @@ export class EdcHelpIconService {
      * @param displayTooltip true if tooltip should be displayed (from the popover options)
      * @param labels the translated labels containing the text for the tooltip
      */
-    getTooltip(displayTooltip: boolean, labels: PopoverLabels): string {
-        return (displayTooltip && !!labels) ? labels.iconAlt : '';
+    getTooltip(displayTooltip: boolean | undefined, labels: PopoverLabels | null | undefined): string  {
+        return (displayTooltip && !!labels && !!labels.iconAlt) ? labels.iconAlt : '';
     }
 
     /**
@@ -73,11 +112,11 @@ export class EdcHelpIconService {
      *
      * @param iconConfig the icon configuration
      */
-    getIconClasses(iconConfig: IconConfig): string | string[] {
+    getIconClasses(iconConfig: IconConfig | undefined): string | string[] {
         if (!iconConfig) {
             return '';
         }
-        const classes = [];
+        const classes: string[] = [];
         if (iconConfig.iconClasses && iconConfig.iconClasses.length) {
             classes.push(...iconConfig.iconClasses);
         }
@@ -102,7 +141,7 @@ export class EdcHelpIconService {
      * @param options the popover options object, containing the options for the icon
      */
     buildIconClasses(icon: PopoverIcon, options: IEdcPopoverOptions): string[] {
-        const classes = [];
+        const classes: string[] = [];
         // Set dark class
         if (options && options.dark) {
             classes.push(DARK_CLASS_NAME);
@@ -126,7 +165,7 @@ export class EdcHelpIconService {
      *
      * @param icon the icon image to style
      */
-    getIconImageStyle(icon: PopoverIcon): Partial<CSSStyleDeclaration> {
+    getIconImageStyle(icon: PopoverIcon): Partial<CSSStyleDeclaration> | null {
         if (!icon || !icon.url) {
             return null;
         }
@@ -156,55 +195,24 @@ export class EdcHelpIconService {
      * @param options the popover options
      * @param labels the labels
      */
-    buildErrorIconConfig(options: IEdcPopoverOptions, labels: PopoverLabel): IconConfig {
+    buildErrorIconConfig(options: IEdcPopoverOptions, labels: PopoverLabel | null | undefined): IconConfig {
         // Build common icon config
-        const { icon: iconBehavior } = options.failBehavior;
+        const { icon: iconBehavior } = options.failBehavior ?? {};
         // If behavior for the icon is to display an error icon, update its class
-        if (iconBehavior === IconBehavior.ERROR) {
+        if (iconBehavior === IconBehavior.ERROR && options.icon) {
             options.icon.class = ERROR_ICON;
         }
         // Start building the main icon configuration
         const iconConfig = this.buildIconConfig(options, labels);
         // Define the classes associated with each behavior:
-        const errorClasses: Map<IconBehavior, IconClass> = new Map()
-            .set(IconBehavior.SHOWN, IconClass.NONE)
-            .set(IconBehavior.DISABLED, IconClass.DISABLED)
-            .set(IconBehavior.HIDDEN, IconClass.HIDDEN)
-            .set(IconBehavior.ERROR, IconClass.ERROR);
-        // Any specific error class to be added, according to the defined behavior
-        const errorClass = errorClasses.get(iconBehavior);
-        iconConfig.errorClasses = errorClass ? [errorClass] : [];
+        let errorClass: IconClass[] = [];
+        if (iconBehavior) {
+            const errClass = EdcHelpIconService.ERROR_ICON_CLASSES.get(iconBehavior);
+            // Any specific error class to be added, according to the defined behavior
+            errorClass = errClass ? [errClass] : [];
+        }
+        iconConfig.errorClasses = errorClass;
         return iconConfig;
-    }
-
-    /**
-     * Builds the icon options
-     *
-     * Checks if at least one of the class or url properties should be defined
-     * If not, use default icon class
-     *
-     * returns a safe PopoverIcon
-     * @param options the popover options
-     * @private
-     */
-    private buildPopoverIcon(options: IEdcPopoverOptions): PopoverIcon {
-        const defaultIcon = PopoverIcon.create();
-        if (!options || !options.icon) {
-            return defaultIcon;
-        }
-        // Make a safe copy merging with default icon values
-        const safeIcon = copyDefinedProperties<PopoverIcon>(defaultIcon, options.icon);
-        // Check consistency between image url and image class attributes and clean invalid properties
-        if (!safeIcon.url || !safeIcon.url.trim()) {
-            // url property must be null or undefined if not valid
-            safeIcon.url = null;
-        }
-        // Check the class attributes, that contains the icon class name
-        if (!safeIcon.class || !safeIcon.class.trim()) {
-            // At least one of the class or url properties must be defined, use default values if not
-            safeIcon.class = safeIcon.url ? null : DEFAULT_ICON;
-        }
-        return safeIcon;
     }
 
 }

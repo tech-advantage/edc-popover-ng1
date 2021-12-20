@@ -9,7 +9,7 @@ export const EDC_CONFIGURATION_NAME = 'edcConfiguration';
  */
 export class EdcConfigurationProvider {
 
-    config: EdcPopoverConfiguration;
+    config: EdcPopoverConfiguration = new EdcPopoverConfiguration();
 
     /**
      * Returns the current configuration, when required by angular for dependency injection

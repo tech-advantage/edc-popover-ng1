@@ -11,7 +11,7 @@ export class EdcLangService {
         return [EDC_HELP_SERVICE_NAME];
     }
 
-    private lang: string;
+    private lang: string = SYS_LANG;
 
     constructor(private readonly helpService: EdcHelpService) {
     }
@@ -20,7 +20,7 @@ export class EdcLangService {
         return this.lang;
     }
 
-    setLang(lang: string) {
+    setLang(lang = SYS_LANG) {
         this.lang = lang;
     }
 
@@ -31,10 +31,10 @@ export class EdcLangService {
      *
      * @param lang the language to use
      */
-    getPopoverLabels(lang = this.lang) {
+    getPopoverLabels(lang: string = this.lang): Promise<PopoverLabel | null> {
         const langToUse = this.helpService.isLanguagePresent(lang) ? lang : SYS_LANG;
         return this.helpService.getPopoverLabels(langToUse)
-            .then((translations: PopoverLabel) => translations || this.loadDefaultLabels(lang))
+            .then((translations: PopoverLabel | null) => translations || this.loadDefaultLabels(lang))
             .catch(() => this.loadDefaultLabels(lang));
     }
 
@@ -42,10 +42,9 @@ export class EdcLangService {
      * Load default popover labels on error
      *
      * @param lang the lang code
-     * @param defaultLanguage default lang code
      */
-    loadDefaultLabels(lang: string): Promise<PopoverLabel> {
-        const labelTranslation = DEFAULT_LABELS.get(lang) || DEFAULT_LABELS.get(SYS_LANG);
+    loadDefaultLabels(lang: string): Promise<PopoverLabel | null> {
+        const labelTranslation = DEFAULT_LABELS.get(lang) ?? DEFAULT_LABELS.get(SYS_LANG) ?? null;
 
         return Promise.resolve(labelTranslation);
     }

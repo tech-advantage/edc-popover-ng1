@@ -36,7 +36,7 @@ describe('EdcHelpIconService test', () => {
     }));
 
     beforeEach(() => {
-        labels = { ...DEFAULT_LABELS.get('en') };
+        labels = { ...DEFAULT_LABELS.get('en') } as PopoverLabel;
     });
 
     describe('getTooltip', () => {
@@ -82,7 +82,7 @@ describe('EdcHelpIconService test', () => {
         });
         it('should return error icon classes', () => {
             // Given icon classes are not defined but some error classes are
-            iconConfig.iconClasses = undefined;
+            iconConfig.iconClasses = [];
             iconConfig.errorClasses = [IconClass.DISABLED];
 
             // When calling getIconClasses()
@@ -92,13 +92,12 @@ describe('EdcHelpIconService test', () => {
             expect(classes).toEqual([IconClass.DISABLED]);
         });
         it('should return empty string or array', () => {
-            // Given icon classes are not defined
-            iconConfig.iconClasses = undefined;
-            iconConfig.errorClasses = undefined;
+            // Given icon classes are empty
+            iconConfig.iconClasses = [];
+            iconConfig.errorClasses = [];
 
             // When calling getIconClasses() with undefined values
             expect(helpIconService.getIconClasses(undefined)).toEqual('');
-            expect(helpIconService.getIconClasses(null)).toEqual('');
             expect(helpIconService.getIconClasses(iconConfig)).toEqual([]);
         });
     });
@@ -185,7 +184,7 @@ describe('EdcHelpIconService test', () => {
         it('should return the style if width and height are not defined', () => {
             // Given only the url is defined
             icon.url = 'imageUrl';
-            icon.height = undefined;
+            icon.height = null;
             icon.width = undefined;
 
             // When calling getIconImageStyle

@@ -2,7 +2,8 @@ import * as angular from 'angular';
 
 import { HelpComponent } from './help.component';
 import { EdcHelpConfigService, EDC_HELP_CONFIG_SERVICE_NAME } from './services/edc-help-config.service';
-import { mockServices, mockService } from './utils/test.utils';
+import { mockServices, mockService, mock } from './utils/test.utils';
+import { IconPopoverConfig } from './config/icon-popover-config';
 
 
 describe('Help component test', () => {
@@ -30,7 +31,7 @@ describe('Help component test', () => {
     }));
 
     beforeEach(() => {
-        spyOn(helpConfigService, 'buildPopoverConfig').and.returnValue(Promise.resolve(null));
+        spyOn(helpConfigService, 'buildPopoverConfig').and.returnValue(Promise.resolve(mock(IconPopoverConfig)));
     });
 
     const buildComponent = (_$componentController_, bindings: any) => {
@@ -58,14 +59,14 @@ describe('Help component test', () => {
         expect(component).toBeDefined();
     }));
 
-    it('should init with right inputs', angular.mock.inject(($componentController: any) => {
+    it('should init with right inputs', angular.mock.inject((_$componentController_: any) => {
         const bindings = {
             mainKey: 'main',
             subKey: 'sub',
             pluginId: 'myPlugin',
             lang: 'fr'
         };
-        const component = $componentController('edcHelp', {}, bindings);
+        const component = _$componentController_('edcHelp', {}, bindings);
 
         expect(component.mainKey).toEqual('main');
         expect(component.subKey).toEqual('sub');

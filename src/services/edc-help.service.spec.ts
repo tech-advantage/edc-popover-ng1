@@ -1,8 +1,9 @@
-import { EdcClient } from 'edc-client-js';
+import { EdcClient, Helper } from 'edc-client-js';
 import * as angular from 'angular';
 import { EDC_HELP_SERVICE_NAME, EdcHelpService } from './edc-help.service';
 import { EdcPopoverConfiguration, EdcPopoverOptions } from '../config';
 import { EDC_CONFIGURATION_NAME, EdcConfigurationProvider } from '../config/edc-configuration.provider';
+import { mock } from '../utils/test.utils';
 
 describe('Help Service Test', () => {
     let injector;
@@ -39,7 +40,7 @@ describe('Help Service Test', () => {
 
     // mock EdcClient
     beforeEach(() => {
-        spyOn(EdcClient.prototype, 'getHelper').and.returnValue(Promise.resolve());
+        spyOn(EdcClient.prototype, 'getHelper').and.returnValue(Promise.resolve(mock(Helper)));
     });
 
     describe('create Service', () => {
@@ -60,14 +61,16 @@ describe('Help Service Test', () => {
         describe('getHelp', () => {
 
             it('should use "edchelp" as plugin identifier if getHelper is called with no defined pluginId parameter', () => {
-                helpService.getHelp('mainKey', 'subKey').then(() => {});
+                helpService.getHelp('mainKey', 'subKey').then(() => {
+                });
 
                 expect(EdcClient.prototype.getHelper).toHaveBeenCalledWith('mainKey', 'subKey', 'myPluginId', undefined);
             });
 
             it('should use "edchelp2" as plugin identifier', () => {
 
-                helpService.getHelp('mainKey', 'subKey', 'edchelp2').then(() => {});
+                helpService.getHelp('mainKey', 'subKey', 'edchelp2').then(() => {
+                });
 
                 expect(EdcClient.prototype.getHelper).toHaveBeenCalledWith('mainKey', 'subKey', 'edchelp2', undefined);
             });
@@ -127,7 +130,7 @@ describe('Help Service Test', () => {
                 expect(options).toEqual({ appendTo: 'parent' });
             });
             it('should return default options if none was defined', () => {
-                popoverConfigurationHandler.options = null;
+                popoverConfigurationHandler.options = undefined;
 
                 const options = helpService.getPopoverOptions();
 

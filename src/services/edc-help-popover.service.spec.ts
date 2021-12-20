@@ -28,7 +28,7 @@ describe('EdcHelpPopoverService test', () => {
         angular.mock.module('edcHelp');
         mockServices([
             mockService(EDC_HELP_SERVICE_NAME, ['getContextUrl', 'getDocumentationUrl']),
-            mockService(EDC_LANG_SERVICE_NAME, ['getPopoverLabels', 'setLang']),
+            mockService(EDC_LANG_SERVICE_NAME, ['getPopoverLabels', 'setLang', 'getLang']),
         ]);
     });
 
@@ -41,16 +41,17 @@ describe('EdcHelpPopoverService test', () => {
 
 
     beforeEach(() => {
-        helper = mockHelper()
+        helper = mockHelper();
     });
 
-    const initSpies = (labels: PopoverLabel = DEFAULT_LABELS.get(SYS_LANG)) => {
+    const initSpies = (labels: PopoverLabel | undefined = DEFAULT_LABELS.get(SYS_LANG), lang = SYS_LANG) => {
         spyOn(helpService, 'getContextUrl')
             .and.callFake((mainKey: string, subKey: string, languageCode: string, articleIndex: number) =>
             `articleUrl1/${mainKey}/${subKey}/${languageCode}/${articleIndex}/`);
         spyOn(helpService, 'getDocumentationUrl').and.callFake((docId: number) => `linkUrl1/${docId}/`);
-        spyOn(langService, 'getPopoverLabels').and.returnValue(Promise.resolve(labels));
+        spyOn(langService, 'getPopoverLabels').and.returnValue(Promise.resolve(labels ?? null));
         spyOn(langService, 'setLang').and.stub();
+        spyOn(langService, 'getLang').and.returnValue(lang);
     };
 
     describe('addContent', () => {
@@ -65,17 +66,17 @@ describe('EdcHelpPopoverService test', () => {
             // Then configuration and its main attributes should be defined
             expect(config).toBeDefined();
             expect(config.content).toBeDefined();
-            const { title, description, articles, links } = config.content;
+            const { title, description, articles, links } = config.content ?? {};
             expect(helpService.getContextUrl).toHaveBeenCalledWith('myMainKey', 'mySubKey', 'en', 0, 'resolvedPluginId');
             expect(helpService.getContextUrl).toHaveBeenCalledTimes(1);
             expect(title).toEqual('MyTitle');
             expect(description).toEqual('MyDescription');
-            expect(articles.length).toEqual(1);
+            expect(articles?.length).toEqual(1);
             expect(articles).toContain(mock(Article, {
                 label: 'articleLabel1',
                 url: `articleUrl1/myMainKey/mySubKey/en/0/`
             }));
-            expect(links.length).toEqual(1);
+            expect(links?.length).toEqual(1);
             expect(helpService.getDocumentationUrl).toHaveBeenCalledWith(7);
             expect(helpService.getDocumentationUrl).toHaveBeenCalledTimes(1);
             expect(links).toContain(mock(Link, { id: 7, label: 'linkLabel1', url: `linkUrl1/7/` }));
@@ -84,31 +85,31 @@ describe('EdcHelpPopoverService test', () => {
         // Description
         it('should return configuration if description is not defined', () => {
             // Given the helper is set with no description
-            helper.description = undefined;
+            helper.description = null;
             initSpies();
 
             // When calling addContent
             const config: IconPopoverConfig = helpPopoverService.addContent(helper, 'mainKey', 'subKey', 'en');
 
             // Then configuration and its main attributes should be defined, except for description
-            const { title, description, articles, links } = config.content;
+            const { title, description, articles, links } = config.content ?? {};
             expect(title).toEqual('MyTitle');
             expect(description).toBeFalsy();
-            expect(articles.length).toEqual(1);
-            expect(links.length).toEqual(1);
+            expect(articles?.length).toEqual(1);
+            expect(links?.length).toEqual(1);
         });
         // Articles and links
         it('should return configuration if articles and links are not defined', () => {
             // Given the helper is set with no articles and no links
-            helper.articles = undefined;
-            helper.links = undefined;
+            helper.articles = null;
+            helper.links = null;
             initSpies();
 
             // When calling addContent
             const config: IconPopoverConfig = helpPopoverService.addContent(helper, 'mainKey', 'subKey', 'en');
 
             // Then configuration and its main attributes should be defined, expect for articles and links
-            const { title, description, articles, links } = config.content;
+            const { title, description, articles, links } = config.content ?? {};
             expect(title).toEqual('MyTitle');
             expect(description).toEqual('MyDescription');
             expect(articles).toEqual([]);
@@ -119,7 +120,7 @@ describe('EdcHelpPopoverService test', () => {
         it('should add content', () => {
             // Given we call the helper for content in fr language but the helper came back with 'ru' as the resolved language
             helper.language = 'ru';
-            initSpies();
+            initSpies(undefined, 'ru');
 
             // When calling addContent
             helpPopoverService.addContent(helper, 'myMainKey', 'mySubKey', 'en');
@@ -151,9 +152,9 @@ describe('EdcHelpPopoverService test', () => {
             const config: IconPopoverConfig = new IconPopoverConfig();
             // When calling addLabels
             helpPopoverService.addLabels(config)
-                .then((config: IconPopoverConfig) => {
+                .then((popoverConfig: IconPopoverConfig) => {
                     // Then popover labels should match
-                    expect(config.labels).toEqual(customLabels);
+                    expect(popoverConfig.labels).toEqual(customLabels);
                 });
         });
 

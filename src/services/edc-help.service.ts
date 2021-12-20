@@ -22,12 +22,12 @@ export class EdcHelpService {
             true);
     }
 
-    getHelp(primaryKey: string, subKey: string, pluginId?: string, lang?: string): Promise<Helper> {
+    getHelp(primaryKey: string, subKey: string, pluginId?: string, lang?: string): Promise<Helper | null> {
         const pluginIdentifier = pluginId || this.edcPopoverConfig.pluginId;
         return this.edcClient.getHelper(primaryKey, subKey, pluginIdentifier, lang);
     }
 
-    getContextUrl(mainKey: string, subKey: string, languageCode: string, articleIndex: number, pluginId?: string): string {
+    getContextUrl(mainKey: string, subKey: string, languageCode: string, articleIndex: number, pluginId?: string): string | null {
         return this.edcClient.getContextWebHelpUrl(mainKey, subKey, languageCode, articleIndex, pluginId);
     }
 
@@ -55,7 +55,7 @@ export class EdcHelpService {
         return this.edcClient.isLanguagePresent(langCode);
     }
 
-    getPopoverLabels(langCode: string): Promise<PopoverLabel> {
+    getPopoverLabels(langCode: string): Promise<PopoverLabel | null> {
         return this.edcClient.getPopoverLabels(langCode);
     }
 }

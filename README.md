@@ -98,7 +98,7 @@ The edc-help component will then be available in your application
 ## Inputs and options
 
 #### Mandatory inputs
-Mandatory inputs or the `EdcHelp` (see [HelpComponent](./projects/edc-popover-ng/src/lib/help.component.ts)):
+Mandatory inputs or the `EdcHelp` (see [HelpComponent](./src/help.component.ts)):
 
 | Prop | Type | Description |
 |---|---|---|
@@ -113,14 +113,14 @@ Optional inputs for the component:
 |---|---|---|---|
 | pluginId | `string` | A different pluginId from the one defined in the main service | `undefined` |
 | lang | `string` | The language to use, for labels and contents, identified by the 2 letters from the [ISO639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) standard. Will use documentation's default if no value is provided  | `undefined` |
-| options | [EdcPopoverOptions](./projects/edc-popover-ng/src/lib/config/edc-popover-options.ts) | Options for this popover - will overwrite global options | `undefined` |
+| options | [EdcPopoverOptions](./src/config/edc-popover-options.ts) | Options for this popover - will overwrite global options | `undefined` |
 
-Available options [(EdcPopoverOptions)](./projects/edc-popover-ng/src/lib/config/edc-popover-options.ts):
+Available options [(EdcPopoverOptions)](./src/config/edc-popover-options.ts):
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| icon | `PopoverIcon` | Icon settings, see [Icon](#Icon) | [PopoverIcon](./projects/edc-popover-ng/src/lib/config/popover-icon.ts) |
-| failBehavior | `FailBehavior` | Icon and popover behavior on error, see [Fail Behavior](#fail-behavior)  | [FailBehavior](./projects/edc-popover-ng/src/lib/config/fail-behavior.ts) |
+| icon | `PopoverIcon` | Icon settings, see [Icon](#Icon) | [PopoverIcon](./src/config/popover-icon.ts) |
+| failBehavior | `FailBehavior` | Icon and popover behavior on error, see [Fail Behavior](#fail-behavior)  | [FailBehavior](./src/config/fail-behavior.ts) |
 | placement | popper.js `Placement` | Popover positioning relatively to the icon | `bottom` |
 | hideOnClick | `boolean` | If true, any click outside of the popover will close it (inside too if interactive is false) | `true` |
 | interactive | `boolean` | Determine if we can interact with the popover content | `true` |
@@ -139,7 +139,7 @@ Available options [(EdcPopoverOptions)](./projects/edc-popover-ng/src/lib/config
 | appendTo | `'parent' | Element | (() => Element)` | The element to which append the popover to | `(() => documentation.body)` |
 
 #### Icon
-[PopoverIcon](./projects/edc-popover-ng/src/lib/config/popover-icon.ts) contains the options for the icon.
+[PopoverIcon](./src/config/popover-icon.ts) contains the options for the icon.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
@@ -152,7 +152,7 @@ If `class` property is provided, it will overwrite the default class `'fa fa-que
 If `url` is defined, it will override the class property, even if `class` is defined.
 
 #### Fail behavior
-If the help content failed to be loaded - or any other error occured, the icon and the popover will look for the [FailBehavior](./projects/edc-popover-ng/src/lib/config/fail-behavior.ts) options to define their style and content.
+If the help content failed to be loaded - or any other error occured, the icon and the popover will look for the [FailBehavior](./src/config/fail-behavior.ts) options to define their style and content.
 
 There are separate behaviors for the help icon, and the popover itself.
 
@@ -165,7 +165,7 @@ For the help icon when an error occurs, it adds the following css selector.
 | `HIDDEN` | The help icon is completely hidden (but stays in DOM to avoid breaking the UI) | `.edc-icon-hidden` |
 | `ERROR` | The help icon is replaced by an exclamation point | `.edc-icon-error` |
 
-Default values are in file [help.less](./projects/edc-popover-ng/src/lib/help.less)
+Default values are in file [help.less](./src/help.less)
 
 For the popover when an error occurs:
  - `ERROR_SHOWN` An error message is shown in the popover
@@ -213,7 +213,7 @@ By default, edc-popover-ng will be looking for the files in [yourDocPath]/popove
 getI18nPath() in your PopoverConfigurationHandler.
 
 edc-popover-ng comes with English and French translations, and supports up to 36 languages.
-For the full list, please refer to [LANGUAGE_CODES](https://github.com/tech-advantage/edc-popover-ng/src/lib/translate/language-codes.ts).
+For the full list, please refer to [LANGUAGE_CODES](./src/translate/language-codes.ts).
 
 ##### JSON file structure
 

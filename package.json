@@ -1,6 +1,6 @@
 {
   "name": "edc-popover-ng1",
-  "version": "2.1.0-beta-0",
+  "version": "2.1.0",
   "description": "AngularJS Popover library for edc",
   "main": "dist/edc-popover-ng1.js",
   "scripts": {
